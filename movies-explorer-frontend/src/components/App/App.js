@@ -15,7 +15,7 @@ import PageNotFound from '../PageNotFound/PageNotFound';
 const headerArray = ["/", "/movies", "/saved-movies", "/profile"];
 const footerArray = ["/", "/movies", "/saved-movies"];
 
-const loggedIn = true;
+const loggedIn = false;
 const isMobileMenuOpened = false;
 
 function App() {
