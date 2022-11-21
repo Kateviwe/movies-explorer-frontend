@@ -1,3 +1,7 @@
+.navigation {
+    margin: 12.5px 0;
+}
+
 .navigation__list {
     display: flex;
     column-gap: 30px;
@@ -8,10 +12,12 @@
 }
 
 .navigation__item {
+    min-height: 38px;
     font-size: 12px;
     line-height: 16px;
     font-weight: 500;
     text-align: center;
+    text-decoration: none;
 }
 
 .navigation__item_registrate {
@@ -19,9 +25,15 @@
 }
 
 .navigation__item_sign-in {
+    color: rgba(0, 0, 0, 1);
     background-color: rgba(43, 224, 128, 1);
     border-radius: 3px;
     padding: 8px 20px;
+}
+
+.navigation__item:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s linear 0.025s;
 }
 
 @media screen and (max-width: 400px) {    
@@ -35,5 +47,109 @@
 
     .navigation__item_sign-in {
         padding: 5px 12px;
+    }
+}
+
+/* Для случая, если пользователь авторизовался */
+.navigationLoggedIn {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.navigationLoggedIn__list {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    column-gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navigationLoggedIn__item {
+    color: rgba(0, 0, 0, 1);
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 400;
+    text-decoration: none;
+}
+
+.navigationLoggedIn__item_active {
+    font-weight: 500;
+}
+
+.navigationLoggedIn__profile {
+    width: 100px;
+    color: rgba(0, 0, 0, 1);
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+}
+
+.navigationLoggedIn__button {
+    display: none;
+}
+
+.navigationLoggedIn__item:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s linear 0.025s;
+}
+
+.navigationLoggedIn__profile:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s linear 0.025s;
+}
+
+.navigationLoggedIn__profile::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    width: 30px;
+    height: 30px;
+    background-image: url(../../images/navigationLoggedIn__profile.svg);
+    background-color: rgba(255, 255, 255, 1);
+    background-repeat: no-repeat;
+    border-radius: 6px;
+    margin-right: 70px;
+}
+
+@media screen and (max-width: 768px) {  
+    .navigationLoggedIn__list {
+        display: none;
+    }
+
+    .navigationLoggedIn__item {
+        display: none;
+    }
+
+    .navigationLoggedIn__profile {
+        display: none;
+    }
+
+    .navigationLoggedIn__button {
+        display: flex;
+        background-image: url(../../images/navigationLoggedIn__button.svg);
+        background-color: rgba(255, 255, 255, 1);
+        background-repeat: no-repeat;
+        background-position: center;
+        border: 0;
+        width: 44px;
+        height: 44px;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {  
+    .navigationLoggedIn__button {
+        background-image: url(../../images/navigationLoggedIn__button-320.svg);
+        width: 40px;
+        height: 43px;
     }
 }

@@ -1,15 +1,15 @@
 import './Header.css';
 import { Link } from 'react-router-dom';
 import Navigation from '../Navigation/Navigation';
-import logoHeader from '../../images/header_logo.png';
+import logoHeader from '../../images/header_logo.svg';
 
-function Header() {
+function Header({loggedIn, isMobileMenuOpened}) {
   return (
-    <header className="header">
+    <header className={`header ${loggedIn ? "header_loggedIn" : ""}`}>
       <Link to="/">
         <img className="header__logo" src={logoHeader} alt="Логотип округлой формы." />
       </Link>
-      <Navigation />
+      <Navigation loggedIn={loggedIn} isMobileMenuOpened={isMobileMenuOpened} />
     </header>
   );
 }
