@@ -1,11 +1,11 @@
 import './MobileMenu.css';
 import { Link, NavLink } from 'react-router-dom';
 
-function MobileMenu({isMobileMenuOpened}) {
+function MobileMenu({isMobileMenuOpened, onClose}) {
   return (
     <>
       <div className={`mobileMenu ${isMobileMenuOpened ? "mobileMenu_active" : ""}`}>
-          <button className="mobileMenu__button" type="button"></button>
+          <button className="mobileMenu__button" type="button" onClick={onClose}></button>
           <ul className="mobileMenu__list">
               <li>
                 <NavLink exact to="/" className="mobileMenu__item" activeClassName="mobileMenu__item_active">Главная</NavLink>

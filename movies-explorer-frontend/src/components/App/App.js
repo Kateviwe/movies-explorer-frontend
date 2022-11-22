@@ -16,13 +16,12 @@ const headerArray = ["/", "/movies", "/saved-movies", "/profile"];
 const footerArray = ["/", "/movies", "/saved-movies"];
 
 const loggedIn = false;
-const isMobileMenuOpened = false;
 
 function App() {
   return (
     <div className="app">
       <Route exact path={headerArray}>
-        <Header loggedIn={loggedIn} isMobileMenuOpened={isMobileMenuOpened} />
+        <Header loggedIn={loggedIn} />
       </Route>
       <Switch>
         <Route exact path="/">

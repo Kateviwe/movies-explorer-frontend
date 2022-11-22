@@ -5,7 +5,7 @@ import logoRegister from '../../images/header_logo.svg';
 function Register() {
   return (
     <section className="register">
-        <form className="form" noValidate>
+        <form className="form">
             <Link to="/">
                 <img className="form__logo" src={logoRegister} alt="Логотип округлой формы." />
             </Link>

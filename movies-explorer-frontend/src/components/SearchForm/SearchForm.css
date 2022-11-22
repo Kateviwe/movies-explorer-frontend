@@ -4,17 +4,14 @@
     padding: 80px 70px 10px 70px;
 }
 
-.searchForm__wrapper {
+.searchForm__form {
     display: flex;
     column-gap: 10px;
     justify-content: space-between;
     align-items: center;
     max-width: 1140px;
-    margin: 0 auto;
-}
-
-.searchForm__form {
     width: 100%;
+    margin: 0 auto;
 }
 
 .searchForm__fieldset {

@@ -135,7 +135,7 @@
     .navigationLoggedIn__button {
         display: flex;
         background-image: url(../../images/navigationLoggedIn__button.svg);
-        background-color: rgba(255, 255, 255, 1);
+        background-color: rgba(70, 93, 255, 1);
         background-repeat: no-repeat;
         background-position: center;
         border: 0;
@@ -143,6 +143,10 @@
         height: 44px;
         margin: 0;
         padding: 0;
+    }
+    
+    .navigationLoggedIn__button_type_white {
+        background-color: rgba(255, 255, 255, 1);
     }
 }
 

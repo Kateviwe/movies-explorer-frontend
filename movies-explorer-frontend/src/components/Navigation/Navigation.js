@@ -1,8 +1,20 @@
+import React from 'react';
 import './Navigation.css';
 import MobileMenu from '../MobileMenu/MobileMenu';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useRouteMatch } from 'react-router-dom';
 
-function Navigation({loggedIn, isMobileMenuOpened}) {
+function Navigation({loggedIn}) {
+
+  const matchMovies = useRouteMatch("/movies");
+  const matchSavedMovies = useRouteMatch("/saved-movies");
+  const matchProfile = useRouteMatch("/profile");
+
+  const [isMobileMenuOpened, setIsMobileMenuOpened] = React.useState(false);
+
+  function handleMobileMenuClick () {
+    setIsMobileMenuOpened(state => !state);
+  }
+
   return (
     <>
       {loggedIn ?
@@ -16,8 +28,8 @@ function Navigation({loggedIn, isMobileMenuOpened}) {
             </li>
           </ul>
           <Link to="/profile" className="navigationLoggedIn__profile">Аккаунт</Link>
-          <button className="navigationLoggedIn__button" type="button"></button>
-          <MobileMenu isMobileMenuOpened={isMobileMenuOpened} />
+          <button className={`navigationLoggedIn__button ${(matchMovies || matchSavedMovies || matchProfile) ? "navigationLoggedIn__button_type_white" : ""}`} type="button" onClick={handleMobileMenuClick}></button>
+          <MobileMenu isMobileMenuOpened={isMobileMenuOpened} onClose={handleMobileMenuClick} />
         </nav>
       :
         <nav className="navigation">

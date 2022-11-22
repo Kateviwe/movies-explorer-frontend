@@ -5,7 +5,7 @@ import logoLogin from '../../images/header_logo.svg';
 function Login() {
   return (
     <section className="login">
-        <form className="formLogin" noValidate>
+        <form className="formLogin">
             <Link to="/">
                 <img className="formLogin__logo" src={logoLogin} alt="Логотип округлой формы." />
             </Link>

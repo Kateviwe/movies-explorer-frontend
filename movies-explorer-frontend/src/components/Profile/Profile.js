@@ -1,8 +1,16 @@
+import React from 'react';
 import './Profile.css';
 
-const isEditButtonPressed = false;
+const isProfileFormValid = true;
 
 function Profile() {
+
+const [isEditButtonPressed, setIsEditButtonPressed] = React.useState(false);
+
+  function handleEditButtonClick () {
+    setIsEditButtonPressed(true);
+  }
+
   return (
     <section className="profile">
         <form className="formProfile">
@@ -28,9 +36,18 @@ function Profile() {
                 </li>
             </ul>
             <span className="formProfile__span">При обновлении профиля произошла ошибка.</span>
-            <button className={`formProfile__button formProfile__button_type_edit ${isEditButtonPressed ? "formProfile__button_inactive" : ""}`} type="button">Редактировать</button>
+            <button className={`formProfile__button formProfile__button_type_edit ${isEditButtonPressed ? "formProfile__button_inactive" : ""}`} type="button" onClick={handleEditButtonClick}>Редактировать</button>
             <button className={`formProfile__button ${isEditButtonPressed ? "formProfile__button_inactive" : ""}`} type="button">Выйти из аккаунта</button>
-            <button className={`formProfile__button formProfile__button_type_save ${!isEditButtonPressed ? "formProfile__button_inactive" : ""}`} type="submit">Сохранить</button>
+            <button
+                className={`
+                    formProfile__button
+                    formProfile__button_type_save
+                    ${!isEditButtonPressed ? "formProfile__button_inactive" : ""}
+                    ${!isProfileFormValid ? "formProfile__button_disabled" : ""}
+                `}
+                type="submit"
+                disabled={!isProfileFormValid}
+            >Сохранить</button>
         </form>
     </section>
   );
