@@ -1,0 +1,134 @@
+.techs {
+    min-height: 425px;
+    padding: 100px 70px;
+    background-color: rgba(245, 245, 245, 1);
+}
+
+.techs__title {
+    max-width: 600px;
+    color: rgba(0, 0, 0, 1);
+    font-size: 22px;
+    line-height: 27px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    text-align: left;
+    margin: 0;
+    padding: 0 0 23px 0;
+}
+
+.techs__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 1);
+}
+
+.techs__header {
+    max-width: 600px;
+    color: rgba(0, 0, 0, 1);
+    font-size: 50px;
+    line-height: 58px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    text-align: center;
+    margin: 0;
+    padding: 90px 0 26px 0;
+}
+
+.techs__text {
+    max-width: 460px;
+    color: rgba(0, 0, 0, 1);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    text-align: center;
+    margin: 0;
+    padding: 0 0 100px 0;
+}
+
+.techs__list {
+    display: flex;
+    list-style: none;
+    grid-column-gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.techs__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(232, 232, 232, 1);
+    width: 90px;
+    height: 60px;
+    font-size: 14px;
+    line-height: 17px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    border-radius: 10px;
+    text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .techs {
+        min-height: 387px;
+        padding: 90px 50px;
+    }
+    
+    .techs__title {
+        max-width: 652px;
+    }
+    
+    .techs__header {
+        padding: 80px 0 22px 0;
+    }
+    
+    .techs__text {
+        font-size: 12px;
+        line-height: 18px;
+        padding: 0 0 83px 0;
+    }
+
+    .techs__item {
+        width: 84px;
+        height: 57px;
+        font-size: 12px;
+        line-height: 15px;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .techs {
+        min-height: 387px;
+        padding: 70px 18px;
+        background-color: rgba(255, 255, 255, 1);
+    }
+    
+    .techs__title {
+        max-width: 284px;
+        font-size: 18px;
+        line-height: 22px;
+        padding: 0 0 28px 0;
+    }
+
+    .techs__header {
+        max-width: 292px;
+        font-size: 30px;
+        line-height: 36px;
+        padding: 60px 0 24px 0;
+    }
+    
+    .techs__text {
+        max-width: 292px;
+        font-size: 11px;
+        line-height: 16px;
+        padding: 0 0 50px 0;
+    }
+    
+    .techs__list {
+        display: grid;
+        grid-template-columns: 84px 84px;
+        grid-gap: 10px;
+    }
+}

@@ -1,0 +1,98 @@
+.moviesCard__image {
+    display: block;
+    width: 270px;
+    height: 151px;
+    object-fit: cover;
+}
+
+.moviesCard__wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(232, 232, 232, 1);
+    padding: 10px 0 25px 0;
+}
+
+.moviesCard__sign {
+    max-width: 226px;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+.moviesCard__button {
+    background-image: url(../../images/moviesCard__button.svg);
+    background-color: rgba(255, 255, 255, 1);
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 0;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.moviesCard__button_active {
+    background-image: url(../../images/moviesCard__button_active.svg);
+}
+
+.moviesCard__button_type_savedMovies {
+    background-image: url(../../images/moviesCard__button_type_savedMovies.svg);
+    opacity: 0;
+}
+
+.moviesCard__film-duration {
+    font-size: 11px;
+    line-height: 13px;
+    font-weight: 400;
+    text-align: left;
+    margin: 6px 0 0 0;
+    padding: 0;
+}
+
+.moviesCard__button:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s linear 0.025s;
+}
+
+.moviesCard__button_type_savedMovies:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s linear 0.025s;
+}
+
+.moviesCard__sign:hover ~ .moviesCard__button_type_savedMovies {
+    opacity: 1;
+}
+
+@media screen and (max-width: 768px) {  
+    .moviesCard__image {
+        width: 339px;
+        height: 190px;
+    }
+
+    .moviesCard__sign {
+        max-width: 295px;
+    }
+}
+
+@media screen and (max-width: 400px) {  
+    .moviesCard__image {
+        width: 300px;
+        height: 168px;
+    }
+    
+    .moviesCard__sign {
+        max-width: 240px;
+        font-size: 12px;
+        line-height: 15px;
+    }
+
+    .moviesCard__film-duration {
+        font-size: 10px;
+        line-height: 12px;
+    }
+}
