@@ -5,6 +5,7 @@
 }
 
 .searchForm__form {
+    position: relative;
     display: flex;
     column-gap: 10px;
     justify-content: space-between;
@@ -50,6 +51,22 @@
     cursor: pointer;
 }
 
+.searchForm__span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: rgba(238, 52, 101, 1);
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 400;
+    margin-bottom: -22px;
+    opacity: 0;
+}
+
+.searchForm__span_active {
+    opacity: 1;
+}
+
 .searchForm__find-button:hover {
     opacity: 0.8;
     transition: opacity 0.2s linear 0.025s;
@@ -69,5 +86,10 @@
     .searchForm__input {
         font-size: 12px;
         padding: 13px 16px;
+    }
+
+    .searchForm__span {
+        font-size: 11px;
+        line-height: 13px;
     }
 }

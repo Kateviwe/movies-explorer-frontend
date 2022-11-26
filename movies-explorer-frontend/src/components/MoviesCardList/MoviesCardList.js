@@ -1,12 +1,23 @@
 import './MoviesCardList.css';
 import MoviesCard from '../MoviesCard/MoviesCard';
 
-function MoviesCardList({isSavedMovies}) {
+function MoviesCardList({isSavedMovies, moviesFilteredByCheckbox}) {
+
+  //Вынесем маппинг из JSX разметки в сам компонент для повышения читабельности кода
+  const moviesElements = moviesFilteredByCheckbox.map(movie => 
+    <li key={movie.id} className="moviesCardList__card">
+        <MoviesCard
+            isSavedMovies={isSavedMovies}
+            movie={movie}
+            key={movie.id}
+        />
+    </li>
+  );
+
   return (
     <div className="moviesCardList">
         <ul className="moviesCardList__cards">
-            <li className="moviesCardList__card"><MoviesCard isSavedMovies={isSavedMovies} /></li>
-            <li className="moviesCardList__card"><MoviesCard isSavedMovies={isSavedMovies} /></li>
+          {moviesElements}
         </ul>
         {isSavedMovies ?
           <div className="moviesCardList__savedMovies-div"></div>
