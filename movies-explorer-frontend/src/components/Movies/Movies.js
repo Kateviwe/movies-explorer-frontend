@@ -9,7 +9,9 @@ function Movies({
   handleSearchMovies,
   handleCheckbox,
   movie,
-  checkbox
+  checkbox,
+  isPreloaderActive,
+  isGetError
 }) {
   return (
     <section className="movies">
@@ -24,6 +26,8 @@ function Movies({
         <MoviesCardList
           isSavedMovies={false}
           moviesFilteredByCheckbox={moviesFilteredByCheckbox}
+          isPreloaderActive={isPreloaderActive}
+          isGetError={isGetError}
         />
     </section>
   );

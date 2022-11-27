@@ -28,6 +28,9 @@ function App() {
   const [movies, setMovies] = React.useState([]);
   const [moviesFilteredByName, setMoviesFilteredByName] = React.useState([]);
   const [moviesFilteredByCheckbox, setMoviesFilteredByCheckbox] = React.useState([]);
+  // Стейт для работы прелоудера
+  const [isPreloaderActive, setIsPreloaderActive] = React.useState(true);
+  const [isGetError, setIsGetError] = React.useState(false);
 
   React.useEffect(() => {
     moviesApi.getMoviesFromServer()
@@ -36,8 +39,19 @@ function App() {
         const initialMovies = handleSearchMovies(movie, moviesList);
         handleCheckbox(checkbox, initialMovies);
       })
-      .catch((err) => console.log(err));
+      .then(() => {
+        setIsGetError(false);
+      })
+      .catch((err) => {
+        setIsGetError(true);
+        console.log(err);
+      });
   }, []);
+
+  // Работа прелоудера
+  const handlePreloader = (value) => {
+    setIsPreloaderActive(value);
+  };
   
   // Фильтрация фильмов по имени
   const handleSearchMovies = (filmName, initialMovies) => {
@@ -55,11 +69,12 @@ function App() {
         return film.duration <= 40;
       });
       setMoviesFilteredByCheckbox(filteredByNameAndCheckbox);
+      handlePreloader(false);
       return filteredByNameAndCheckbox;
     }
     setMoviesFilteredByCheckbox(moviesWithName);
+    handlePreloader(false);
     return moviesWithName;
-    
   }
 
   return (
@@ -80,6 +95,8 @@ function App() {
             handleCheckbox={handleCheckbox}
             movie={movie}
             checkbox={checkbox}
+            isPreloaderActive={isPreloaderActive}
+            isGetError={isGetError}
           />
         </Route>
         <Route path="/saved-movies">
