@@ -8,7 +8,8 @@ function SearchForm({
   handleSearchMovies,
   handleCheckbox,
   movie,
-  checkbox
+  checkbox,
+  handleLoad
 }) {
 
   const [inputValue, setInputValue] = React.useState(movie);
@@ -18,6 +19,7 @@ function SearchForm({
   const handleFormSubmit = (evt) => {
     evt.preventDefault();
     if (inputValue) {
+      handleLoad(false);
       setIsInputValid(true);
       const moviesWithName = handleSearchMovies(inputValue, movies);
       handleCheckbox(isShortFilm, moviesWithName);
@@ -28,6 +30,7 @@ function SearchForm({
   };
 
   const handleCheckboxChange = (checkboxState) => {
+    handleLoad(false);
     setIsShortFilm(checkboxState);
     sessionStorage.setItem('shortFilm', checkboxState);
     handleCheckbox(checkboxState, moviesFilteredByName);
