@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import './App.css';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
@@ -10,6 +10,7 @@ import Login from '../Login/Login';
 import Profile from '../Profile/Profile';
 import Footer from '../Footer/Footer';
 import PageNotFound from '../PageNotFound/PageNotFound';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
 
 //Импорт экземпляра класса MoviesApi
 import { moviesApi } from '../../utils/MoviesApi';
@@ -36,6 +37,8 @@ function App() {
   const [moviesFilteredByCheckbox, setMoviesFilteredByCheckbox] = React.useState([]);
   // Сохраненные фильмы
   const [savedMovies, setSavedMovies] = React.useState([]);
+  const [savedMoviesFilteredByName, setSavedMoviesFilteredByName] = React.useState([]);
+  const [savedMoviesByCheckbox, setSavedMoviesByCheckbox] = React.useState([]);
   // Стейт для работы прелоудера
   const [isPreloaderActive, setIsPreloaderActive] = React.useState(true);
   const [isGetError, setIsGetError] = React.useState(false);
@@ -54,9 +57,21 @@ function App() {
 
   const history = useHistory();
 
+  // const [checkbox, setCheckbox] = React.useState(false);
+  // React.useEffect(() => {
+  //   setCheckbox(JSON.parse(sessionStorage.getItem('shortFilm')));
+  // },[])
+  // const path = useLocation();
+
+  // React.useEffect(() => {
+    // getInfoUser();
+    // console.log(path.pathname)
+  //   history.push(path.pathname)
+  // },[]);
+
   React.useEffect(() => {
-    getAllSavedMovies();
-  }, []);
+    handleGetSavedMovies();
+  }, [,logIn]);
 
   React.useEffect(() => {
     moviesApi.getMoviesFromServer()
@@ -72,7 +87,7 @@ function App() {
         setIsGetError(true);
         console.log(err);
       });
-  }, []);
+  }, [,logIn]);
 
   // Работа прелоудера
   const handlePreloader = (value) => {
@@ -95,12 +110,38 @@ function App() {
     setIsFirstLoadLogin(value);
   };
 
+  const handleGetSavedMovies = () => {
+    api.getSavedMovies()
+      .then((movies) => {
+        setSavedMovies(movies);
+        const initialSavedMovies = handleSearchSavedMovies("", movies)
+        handleCheckboxSavedMovies(false, initialSavedMovies);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   // Фильтрация фильмов по имени
   const handleSearchMovies = (filmName, initialMovies) => {
-    const filteredMovies = initialMovies.filter(function (film) {
-      return film.nameRU.includes(filmName);
+    if(filmName) {
+      const filteredMovies = initialMovies.filter(function (film) {
+        return film.nameRU.toLowerCase().includes(filmName.toLowerCase());
+      });
+      setMoviesFilteredByName(filteredMovies);
+      return filteredMovies;
+    } else {
+      setMoviesFilteredByName(initialMovies);
+      return initialMovies;
+    }
+  };
+
+  // Фильтрация сохраненных фильмов по имени 
+  const handleSearchSavedMovies = (filmName, initialSavedMovies) => {
+    const filteredMovies = initialSavedMovies.filter(function (film) {
+      return film.nameRU.toLowerCase().includes(filmName.toLowerCase());
     });
-    setMoviesFilteredByName(filteredMovies);
+    setSavedMoviesFilteredByName(filteredMovies);
     return filteredMovies;
   };
 
@@ -119,22 +160,25 @@ function App() {
     return moviesWithName;
   };
 
-  // Получим с сервера все сохраненные фильмы
-  const getAllSavedMovies = () => {
-    api.getSavedMovies()
-      .then((movies) => {
-        setSavedMovies(movies);
-      })
-      .catch((err) => {
-        console.log(err);
+  // Фильтрация сохраненных фильмов по состоянию чекбокса
+  const handleCheckboxSavedMovies = (stateCheckbox, savedMoviesWithName) => {
+    if (stateCheckbox) {
+      const filteredByNameAndCheckbox = savedMoviesWithName.filter(function (film) {
+        return film.duration <= 40;
       });
+      setSavedMoviesByCheckbox(filteredByNameAndCheckbox);
+      return filteredByNameAndCheckbox;
+    }
+    setSavedMoviesByCheckbox(savedMoviesWithName);
+    return savedMoviesWithName;
   };
 
   // Добавляем фильм в сохраненные, если ему был поставлен лайк
   const saveMovie = (movie) => {
     api.saveNewMovie(movie)
-      .then((newMovie) => {
-        return setSavedMovies([newMovie, ...savedMovies]);
+      .then(() => {
+        // return setSavedMoviesByCheckbox([newMovie, ...savedMoviesByCheckbox]);
+        handleGetSavedMovies();
       })
       .catch((err) => {
         console.log(err);
@@ -144,12 +188,13 @@ function App() {
   // Убираем фильм из сохраненных, если лайк был удален
   const deleteMovie = (movie) => {
     // Есть ли такой фильм в сохраненных фильмах
-    const necessaryMovie = savedMovies.find((savedMovie) => savedMovie.movieId === movie.id);
+    const necessaryMovie = savedMovies.find((savedMovie) => (savedMovie.movieId === movie.id || savedMovie.movieId === movie.movieId));
     if (necessaryMovie) {
       api.deleteSavedMovie(necessaryMovie._id)
         .then(() => {
-          const newSavedMovies = savedMovies.filter(savedMovie => savedMovie.movieId !== necessaryMovie.movieId);
-          return setSavedMovies(newSavedMovies);
+          // const newSavedMovies = savedMovies.filter(savedMovie => savedMovie.movieId !== necessaryMovie.movieId);
+          // return setSavedMovies(newSavedMovies);
+          handleGetSavedMovies();
         })
         .catch((err) => {
           console.log(err);
@@ -185,7 +230,7 @@ function App() {
 
   const handleLoginFormSubmit = (email, password) => {
     api.login(email, password)
-    .then(() => {
+    .then((res) => {
       getInfoUser();
       setLogIn(true);
       handleLoadLogin(true);
@@ -215,8 +260,16 @@ function App() {
   const handleProfileExit = () => {
     api.exitUserProfile()
     .then(() => {
-      setLogIn(false);
       history.push('/');
+      sessionStorage.removeItem('inputMovie');
+      sessionStorage.removeItem('shortFilm');
+      // setMovies([]);
+      // setMoviesFilteredByName([]);
+      // setMoviesFilteredByCheckbox([]);
+      // setSavedMovies([]);
+      // setSavedMoviesFilteredByName([]);
+      // setSavedMoviesByCheckbox([]);
+      setLogIn(false);
     })
     .catch((err) => {
       console.log(err);
@@ -227,14 +280,18 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="app">
         <Route exact path={headerArray}>
-          <Header loggedIn={logIn} />
+          <Header
+            loggedIn={logIn}
+            getInfoUser={getInfoUser}
+          />
         </Route>
         <Switch>
           <Route exact path="/">
             <Main />
           </Route>
-          <Route path="/movies">
-            <Movies
+          <ProtectedRoute
+              path="/movies"
+              component={Movies}
               movies={movies}
               moviesFilteredByName={moviesFilteredByName}
               moviesFilteredByCheckbox={moviesFilteredByCheckbox}
@@ -247,13 +304,21 @@ function App() {
               saveMovie={saveMovie}
               deleteMovie={deleteMovie}
               savedMovies={savedMovies}
-            />
-          </Route>
-          <Route path="/saved-movies">
-            <SavedMovies
-              // savedMovies={savedMovies}
-            />
-          </Route>
+              logIn={logIn}
+          />
+          <ProtectedRoute
+              path="/saved-movies"
+              component={SavedMovies}
+              isPreloaderActive={isPreloaderActive}
+              handleSearchSavedMovies={handleSearchSavedMovies}
+              savedMoviesFilteredByName={savedMoviesFilteredByName}
+              savedMoviesByCheckbox={savedMoviesByCheckbox}
+              handleCheckboxSavedMovies={handleCheckboxSavedMovies}
+              saveMovie={saveMovie}
+              deleteMovie={deleteMovie}
+              savedMovies={savedMovies}
+              logIn={logIn}
+          />
           <Route path="/signup">
             <Register
               handleRegisterFormSubmit={handleRegisterFormSubmit}
@@ -271,8 +336,9 @@ function App() {
               isFirstLoadLogin={isFirstLoadLogin}
             />
           </Route>
-          <Route path="/profile">
-            <Profile
+          <ProtectedRoute
+              path="/profile"
+              component={Profile}
               handleProfileFormSubmit={handleProfileFormSubmit}
               isProfileEditSuccess={isProfileEditSuccess}
               handlePopupEdit={handlePopupEdit}
@@ -281,8 +347,8 @@ function App() {
               handleErrUp={handleErrUp}
               errorProfile={errorProfile}
               onClickExitProfile={handleProfileExit}
-            />
-          </Route>
+              logIn={logIn}
+          />
           <Route path="*">
             <PageNotFound />
           </Route>

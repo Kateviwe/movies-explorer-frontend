@@ -7,7 +7,6 @@ function MoviesCard({
   saveMovie,
   deleteMovie,
   savedMovies
-  // Сохраненные фильмы
 }) {
 
   const [isCardLiked, setIsCardLiked] = React.useState(false);
@@ -25,19 +24,28 @@ function MoviesCard({
 
   //Обработчик клика по лайку
   const handleLikeClick = () => {
-    if (isCardLiked) {
-      deleteMovie(movie);
-      setIsCardLiked(false);
+    if (isSavedMovies) {
+        deleteMovie(movie);
+        setIsCardLiked(false);
     } else {
-      saveMovie(movie);
-      setIsCardLiked(true);
+      if (isCardLiked) {
+        deleteMovie(movie);
+        setIsCardLiked(false);
+      } else {
+        saveMovie(movie);
+        setIsCardLiked(true);
+      }
     }
   };
 
   return (
     <div className="moviesCard">
         <a href={movie.trailerLink} target="_blank" rel="noreferrer">
-          <img className="moviesCard__image" src={`https://api.nomoreparties.co${movie.image.url}`} alt={movie.description} />
+          <img
+            className="moviesCard__image" 
+            src={isSavedMovies ? movie.image : `https://api.nomoreparties.co${movie.image.url}`} 
+            alt={movie.description}
+          />
         </a>
         <div className="moviesCard__wrapper">
             <h3 className="moviesCard__sign">{movie.nameRU}</h3>

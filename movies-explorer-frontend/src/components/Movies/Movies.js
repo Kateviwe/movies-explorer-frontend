@@ -31,6 +31,7 @@ function Movies({
   return (
     <section className="movies">
         <SearchForm
+          isSavedMovies={false}
           movies={movies}
           moviesFilteredByName={moviesFilteredByName}
           handleSearchMovies={handleSearchMovies}

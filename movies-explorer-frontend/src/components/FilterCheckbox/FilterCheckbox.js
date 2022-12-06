@@ -1,6 +1,8 @@
+import React from 'react';
 import './FilterCheckbox.css';
 
 function FilterCheckbox({isShortFilm, handleCheckboxChange}) {
+
   function onCheckbox(e) {
     handleCheckboxChange(e.target.checked);
   }
@@ -13,7 +15,7 @@ function FilterCheckbox({isShortFilm, handleCheckboxChange}) {
                 className="filterCheckbox__input"
                 type="checkbox"
                 name="filterCheckbox"
-                defaultChecked={isShortFilm}
+                checked={isShortFilm}
                 onChange={onCheckbox}
             />
             {/* Стилизируем чекбокс так как хотим*/}
