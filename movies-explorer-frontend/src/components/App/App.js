@@ -231,6 +231,7 @@ function App() {
   };
 
   const handleLoginFormSubmit = (email, password) => {
+    console.log('PPPPPPPPP')
     api.login(email, password)
     .then(() => {
       getInfoUser();
