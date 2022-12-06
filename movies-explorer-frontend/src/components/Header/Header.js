@@ -14,7 +14,7 @@ function Header({
   const matchProfile = useRouteMatch("/profile");
 
   React.useEffect(() => {
-    getInfoUser();
+     getInfoUser();
   }, []);
 
   return (

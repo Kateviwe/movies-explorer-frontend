@@ -57,36 +57,38 @@ function App() {
 
   const history = useHistory();
 
-  // const [checkbox, setCheckbox] = React.useState(false);
-  // React.useEffect(() => {
-  //   setCheckbox(JSON.parse(sessionStorage.getItem('shortFilm')));
-  // },[])
-  // const path = useLocation();
-
-  // React.useEffect(() => {
-    // getInfoUser();
-    // console.log(path.pathname)
-  //   history.push(path.pathname)
-  // },[]);
+  React.useEffect(() => {
+    if(logIn) {
+      getInfoUser();
+    } else {
+      setCurrentUser([]);
+      sessionStorage.removeItem('inputMovie');
+      sessionStorage.removeItem('shortFilm');
+    }
+  },[logIn]);
 
   React.useEffect(() => {
-    handleGetSavedMovies();
+    if(logIn) {
+      handleGetSavedMovies();
+    }
   }, [,logIn]);
 
   React.useEffect(() => {
-    moviesApi.getMoviesFromServer()
-      .then((moviesList) => {
-        setMovies(moviesList);
-        const initialMovies = handleSearchMovies(movie, moviesList);
-        handleCheckbox(checkbox, initialMovies);
-      })
-      .then(() => {
-        setIsGetError(false);
-      })
-      .catch((err) => {
-        setIsGetError(true);
-        console.log(err);
-      });
+    if (logIn) {
+      moviesApi.getMoviesFromServer()
+        .then((moviesList) => {
+          setMovies(moviesList);
+          const initialMovies = handleSearchMovies(movie, moviesList);
+          handleCheckbox(checkbox, initialMovies);
+        })
+        .then(() => {
+          setIsGetError(false);
+        })
+        .catch((err) => {
+          setIsGetError(true);
+          console.log(err);
+        });
+    }
   }, [,logIn]);
 
   // Работа прелоудера
@@ -230,7 +232,7 @@ function App() {
 
   const handleLoginFormSubmit = (email, password) => {
     api.login(email, password)
-    .then((res) => {
+    .then(() => {
       getInfoUser();
       setLogIn(true);
       handleLoadLogin(true);
@@ -263,6 +265,7 @@ function App() {
       history.push('/');
       sessionStorage.removeItem('inputMovie');
       sessionStorage.removeItem('shortFilm');
+      setCurrentUser([]);
       // setMovies([]);
       // setMoviesFilteredByName([]);
       // setMoviesFilteredByCheckbox([]);
