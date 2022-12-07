@@ -38,7 +38,6 @@ class Api {
     }
 
     login(email, password) {
-        console.log('Я вывел')
         return fetch(`${this._url}/signin`, {
             method: 'POST',
             credentials: 'include',

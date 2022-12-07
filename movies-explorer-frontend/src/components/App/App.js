@@ -58,7 +58,6 @@ function App() {
   const history = useHistory();
 
   React.useEffect(() => {
-    console.log('PPPPPPPPP2')
     if(logIn) {
       getInfoUser();
     } else {
@@ -210,7 +209,6 @@ function App() {
     .then(() => {
       setRegisteredIn(true);
       handleLoadRegister(true);
-      console.log('PPPPPPPPP3')
       handleLoginFormSubmit(email, password);
     })
     .catch((err) => {
@@ -233,7 +231,6 @@ function App() {
   };
 
   const handleLoginFormSubmit = (email, password) => {
-    console.log('PPPPPPPPP')
     api.login(email, password)
     .then(() => {
       getInfoUser();
