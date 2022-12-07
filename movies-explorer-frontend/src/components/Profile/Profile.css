@@ -1,3 +1,7 @@
+.profile {
+    position: relative;
+}
+
 .formProfile {
     width: 410px;
     text-align: center;
@@ -18,18 +22,20 @@
 .formProfile__list {
     max-width: 410px;
     list-style: none;
-    margin: 0 0 185px 0;
+    margin: 0 0 170px 0;
     padding: 0;
 }
 
 .formProfile__item {
     max-width: 410px;
+    border-bottom: 1px solid rgba(232, 232, 232, 1);
+    margin-top: 17px;
+}
+
+.formProfile__wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(232, 232, 232, 1);
-    margin-top: 17px;
-    padding-bottom: 17px;
 }
 
 .formProfile__header {
@@ -53,7 +59,27 @@
     padding: 0;
 }
 
+.formProfile__input_disabled {
+    background-color: rgba(255, 255, 255, 1);
+}
+
 .formProfile__span {
+    display: block;
+    min-height: 12px;
+    color: rgba(238, 52, 101, 1);
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 400;
+    text-align: start;
+    padding: 3px 0 2px 0;
+    opacity: 0;
+}
+
+.formProfile__span_visible {
+    opacity: 1;
+}
+
+.formProfile__message {
     width: 410px;
     min-height: 14px;
     color: rgba(238, 52, 101, 1);
@@ -61,6 +87,10 @@
     line-height: 13px;
     font-weight: 400;
     opacity: 0;
+}
+
+.formProfile__message_visible {
+    opacity: 1;
 }
 
 .formProfile__button {
@@ -89,6 +119,50 @@
     display: none;
 }
 
+.formProfile__submitOk {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 350px;
+    height: 250px;
+    background-color: rgba(43, 224, 128, 1);
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    margin: auto 0;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.formProfile__submitOk_opened {
+    display: block;    
+}
+
+.formProfile__submit-text {
+    max-width: 250px;
+    color: rgba(255, 255, 255, 1);
+    font-size: 26px;
+    line-height: 38px;
+    font-weight: 400;
+    text-align: center;
+    margin: 0 auto;
+    padding: 0 0 54px 0;
+}
+
+.formProfile__submit-exit {
+    width: 310px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 1);
+    color: rgba(0, 0, 0, 1);
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 400;
+    border: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
 .formProfile__button_type_save {
     min-width: 410px;
     min-height: 45px;
@@ -108,8 +182,21 @@
     cursor: default;
 }
 
+.formProfile__input::placeholder {
+    color: rgba(0, 0, 0, 1);
+}
+
+.formProfile__input:focus::placeholder {
+    opacity: 0;
+}
+
 .formProfile__button:hover {
     opacity: 0.7;
+    transition: opacity 0.2s linear 0.025s;
+}
+
+.formProfile__submit-exit:hover {
+    opacity: 0.8;
     transition: opacity 0.2s linear 0.025s;
 }
 
@@ -138,7 +225,7 @@
     }
     
     .formProfile__list {
-        margin: 0 0 175px 0;
+        margin: 0 0 160px 0;
     }
 }
 
@@ -154,7 +241,7 @@
     
     .formProfile__list {
         max-width: 260px;
-        margin: 0 0 341px 0;
+        margin: 0 0 327px 0;
     }
     
     .formProfile__item {
@@ -169,7 +256,7 @@
         width: 120px;
     }
     
-    .formProfile__span {
+    .formProfile__message {
         width: 260px;
     }
     
@@ -177,6 +264,23 @@
         width: 260px;
         font-size: 12px;
         line-height: 15px;
+    }
+
+    .formProfile__submitOk {
+        width: 250px;
+        height: 150px;
+        padding: 15px 10px;
+    }
+    
+    .formProfile__submit-text {
+        max-width: 230px;
+        font-size: 22px;
+        line-height: 26px;
+        padding: 0 0 28px 0;
+    }
+
+    .formProfile__submit-exit {
+        width: 230px;
     }
     
     .formProfile__button_type_save {

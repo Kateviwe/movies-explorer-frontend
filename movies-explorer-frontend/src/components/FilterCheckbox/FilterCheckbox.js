@@ -1,6 +1,11 @@
+import React from 'react';
 import './FilterCheckbox.css';
 
-function FilterCheckbox() {
+function FilterCheckbox({isShortFilm, handleCheckboxChange}) {
+
+  function onCheckbox(e) {
+    handleCheckboxChange(e.target.checked);
+  }
   return (
     <div className="filterCheckbox">
         <label htmlFor="checkbox-id" className="filterCheckbox__label">
@@ -10,7 +15,8 @@ function FilterCheckbox() {
                 className="filterCheckbox__input"
                 type="checkbox"
                 name="filterCheckbox"
-                value="Короткометражки"
+                checked={isShortFilm}
+                onChange={onCheckbox}
             />
             {/* Стилизируем чекбокс так как хотим*/}
             <div className="filterCheckbox__span"></div>
