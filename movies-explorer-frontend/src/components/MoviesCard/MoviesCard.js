@@ -41,7 +41,7 @@ function MoviesCard({
 
   return (
     <div className="moviesCard">
-        <a href={movie.trailerLink} target="_blank" rel="noreferrer">
+        <a href={!isSavedMovies ? movie.trailerLink : movie.trailer} target="_blank" rel="noreferrer">
           <img
             className="moviesCard__image" 
             src={isSavedMovies ? movie.image : `https://api.nomoreparties.co${movie.image.url}`} 
