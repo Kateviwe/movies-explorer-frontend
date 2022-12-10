@@ -1,33 +1,42 @@
+import React from 'react';
 import './SavedMovies.css';
 import SearchForm from '../SearchForm/SearchForm';
 import MoviesCardList from '../MoviesCardList/MoviesCardList';
 
 function SavedMovies({
   isPreloaderActive,
-  handleSearchSavedMovies,
-  savedMoviesFilteredByName,
-  savedMoviesByCheckbox,
-  handleCheckboxSavedMovies,
   saveMovie,
   deleteMovie,
-  savedMovies,
+  savedBeatMovies,
+  filteredSavedMovies,
+  handleInputSavedState,
+  handleCheckboxSavedState,
+  inputSavedState,
+  checkboxSavedState
 }) {
+  
+  // saved-movies
+  React.useEffect(() => {
+    handleInputSavedState('');
+    handleCheckboxSavedState(false);
+  }, []);
+
   return (
     <section className="savedMovies">
         <SearchForm
           isSavedMovies={true}
-          handleSearchSavedMovies={handleSearchSavedMovies}
-          savedMoviesFilteredByName={savedMoviesFilteredByName}
-          handleCheckboxSavedMovies={handleCheckboxSavedMovies}
-          savedMovies={savedMovies}
+          handleInputSavedState={handleInputSavedState}
+          handleCheckboxSavedState={handleCheckboxSavedState}
         />
         <MoviesCardList
           isSavedMovies={true}
           isPreloaderActive={isPreloaderActive}
           saveMovie={saveMovie}
           deleteMovie={deleteMovie}
-          savedMovies={savedMovies}
-          savedMoviesByCheckbox={savedMoviesByCheckbox}
+          savedBeatMovies={savedBeatMovies}
+          filteredSavedMovies={filteredSavedMovies}
+          inputSavedState={inputSavedState}
+          checkboxSavedState={checkboxSavedState}
         />
     </section>
   );

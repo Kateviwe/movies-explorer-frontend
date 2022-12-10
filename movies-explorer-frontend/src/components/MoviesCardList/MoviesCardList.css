@@ -31,6 +31,10 @@
     padding: 0;
 }
 
+.moviesCardList__card_unshown {
+    display: none;
+}
+
 .moviesCardList__cards_type_preloader {
     display: block;
 }
@@ -54,6 +58,10 @@
     padding: 0;
     cursor: pointer;
     opacity: 1;
+}
+
+.moviesCardList__button_unshown {
+    display: none;
 }
 
 .moviesCardList__button-text {

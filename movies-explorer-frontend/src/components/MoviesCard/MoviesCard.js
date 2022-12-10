@@ -6,7 +6,7 @@ function MoviesCard({
   movie,
   saveMovie,
   deleteMovie,
-  savedMovies
+  savedBeatMovies
 }) {
 
   const [isCardLiked, setIsCardLiked] = React.useState(false);
@@ -14,13 +14,14 @@ function MoviesCard({
   const movieHours = Math.floor(movie.duration / 60);
   const movieMinutes = (movie.duration % 60);
 
+  // Отрисовка лайка на карточке фильма
   React.useEffect (() => {
-    savedMovies.find((item) => {
+    savedBeatMovies.find((item) => {
       if(item.movieId === movie.id) {
         setIsCardLiked(true);
       }
     })
-  }, [])
+  }, [savedBeatMovies])
 
   //Обработчик клика по лайку
   const handleLikeClick = () => {

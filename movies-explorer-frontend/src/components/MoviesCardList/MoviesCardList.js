@@ -5,14 +5,16 @@ import Preloader from '../Preloader/Preloader';
 
 function MoviesCardList({
   isSavedMovies,
-  moviesFilteredByCheckbox,
   isPreloaderActive,
   isGetError,
   isFirstLoad,
   saveMovie,
   deleteMovie,
-  savedMovies,
-  savedMoviesByCheckbox
+  filteredMovies,
+  savedBeatMovies,
+  filteredSavedMovies,
+  inputSavedState,
+  checkboxSavedState
 }) {
 
   const [shownMovies, setShownMovies] = React.useState([]);
@@ -28,55 +30,38 @@ function MoviesCardList({
     }
   };
 
+  // movies
   React.useEffect(() => {
-    if(!isSavedMovies) {
-      checkWindowWidth(moviesFilteredByCheckbox, window.innerWidth);
-    } else {
-      setShownSavedMovies(savedMoviesByCheckbox);
+    if(!isSavedMovies && filteredMovies != null) {
+      checkWindowWidth(filteredMovies, window.innerWidth);
     }
-  }, [moviesFilteredByCheckbox, savedMoviesByCheckbox, savedMovies]);
+  }, [filteredMovies, isSavedMovies]);
+
+  // saved-movies
+  React.useEffect(() => {
+    if(isSavedMovies && filteredSavedMovies != null) {
+      setShownSavedMovies(filteredSavedMovies);
+    }
+  }, [filteredSavedMovies, isSavedMovies, inputSavedState, checkboxSavedState, savedBeatMovies]);
 
   // Слушаем изменение ширины экрана устройства
   window.addEventListener('resize', function() {
     // Задержка вызова функции в мс
     const delay = 200;
-    setTimeout(checkWindowWidth(moviesFilteredByCheckbox, window.innerWidth), delay);
+    if(filteredMovies != null) {
+      setTimeout(checkWindowWidth(filteredMovies, window.innerWidth), delay);
+    }
   });
 
   const onAddButtonClick = () => {
     const arrayLength = shownMovies.length;
     const windowWidth = window.innerWidth;
     if(windowWidth > 768) {
-      setShownMovies(moviesFilteredByCheckbox.slice(0, arrayLength + 4));
+      setShownMovies(filteredMovies.slice(0, arrayLength + 4));
     } else {
-      setShownMovies(moviesFilteredByCheckbox.slice(0, arrayLength + 2));
+      setShownMovies(filteredMovies.slice(0, arrayLength + 2));
     }
   };
-
-      //Вынесем маппинг из JSX разметки в сам компонент для повышения читабельности кода
-      let renderMovies = shownMovies.map(movie =>
-        <li key={movie.id} className="moviesCardList__card">
-            <MoviesCard
-                isSavedMovies={isSavedMovies}
-                movie={movie}
-                saveMovie={saveMovie}
-                deleteMovie={deleteMovie}
-                savedMovies={savedMovies}
-            />
-        </li>
-      );
-
-      let renderSavedMovies = shownSavedMovies.map(movie =>
-        <li key={movie.movieId} className="moviesCardList__card">
-            <MoviesCard
-                isSavedMovies={isSavedMovies}
-                movie={movie}
-                saveMovie={saveMovie}
-                deleteMovie={deleteMovie}
-                savedMovies={savedMovies}
-            />
-        </li>
-      );
       
   return (
     <>
@@ -84,20 +69,48 @@ function MoviesCardList({
         // Сохраненные фильмы
         <div className="moviesCardList">
           <ul className="moviesCardList__cards" >
-            {renderSavedMovies}
+            { filteredSavedMovies != null ?
+              shownSavedMovies.map(movie =>
+                <li key={movie.movieId} className="moviesCardList__card">
+                    <MoviesCard
+                        isSavedMovies={isSavedMovies}
+                        movie={movie}
+                        saveMovie={saveMovie}
+                        deleteMovie={deleteMovie}
+                        savedBeatMovies={savedBeatMovies}
+                    />
+                </li>
+              )
+              : ""
+            }
           </ul>
           <div className="moviesCardList__savedMovies-div"></div>
         </div>
         :
         // Фильмы
         <div className="moviesCardList">
-            <p className={`moviesCardList__not-found ${((!isFirstLoad || sessionStorage.getItem('shortFilm') !== null) && renderMovies.length === 0 && !isPreloaderActive && !isGetError) ? "moviesCardList__not-found_active" : ""}`}>Ничего не найдено</p>
+            <p className={`moviesCardList__not-found ${((!isFirstLoad || localStorage.getItem('inputState') !== null) && filteredMovies != null && filteredMovies.length === 0 && !isPreloaderActive && !isGetError) ? "moviesCardList__not-found_active" : ""}`}>Ничего не найдено</p>
             <p className={`moviesCardList__not-found ${isGetError ? "moviesCardList__not-found_active" : ""}`}>Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз</p>
             <ul className={`moviesCardList__cards ${isPreloaderActive ? "moviesCardList__cards_type_preloader" : ""}`} >
-              {(isPreloaderActive && !isGetError) ? <li><Preloader /></li> : renderMovies}
+              {(!isPreloaderActive || isGetError) ? filteredMovies != null ?
+                  shownMovies.map(movie =>
+                    <li key={movie.id} className="moviesCardList__card">
+                        <MoviesCard
+                            isSavedMovies={isSavedMovies}
+                            movie={movie}
+                            saveMovie={saveMovie}
+                            deleteMovie={deleteMovie}
+                            savedBeatMovies={savedBeatMovies}
+                        />
+                    </li>
+                  )
+                : ""
+                : <li><Preloader /></li>
+              }
+
             </ul>
             <button
-              className={`moviesCardList__button ${(moviesFilteredByCheckbox.length - shownMovies.length !== 0) ? "moviesCardList__button_active" : ""}`}
+              className={`moviesCardList__button ${(filteredMovies != null && filteredMovies.length - shownMovies.length !== 0) ? "moviesCardList__button_active" : ""}`}
               type="button"
               onClick={onAddButtonClick}
             >

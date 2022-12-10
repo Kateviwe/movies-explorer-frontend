@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import './App.css';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
@@ -23,24 +23,24 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 const headerArray = ["/", "/movies", "/saved-movies", "/profile"];
 const footerArray = ["/", "/movies", "/saved-movies"];
 
-const movie = sessionStorage.getItem('inputMovie');
-const checkbox = JSON.parse(sessionStorage.getItem('shortFilm'));
-
 function App() {
 
   //Создадим глобальный стейт currentUser с помощью React Context, который встроен в библиотеку React.js
   //Стейт-переменная, отвечающая за данные текущего пользователя
   const [currentUser, setCurrentUser] = React.useState([]);
-  
-  const [movies, setMovies] = React.useState([]);
-  const [moviesFilteredByName, setMoviesFilteredByName] = React.useState([]);
-  const [moviesFilteredByCheckbox, setMoviesFilteredByCheckbox] = React.useState([]);
-  // Сохраненные фильмы
-  const [savedMovies, setSavedMovies] = React.useState([]);
-  const [savedMoviesFilteredByName, setSavedMoviesFilteredByName] = React.useState([]);
-  const [savedMoviesByCheckbox, setSavedMoviesByCheckbox] = React.useState([]);
+
+  // Основные стейты для movies
+  const [beatMovies, setBeatMovies] = React.useState(null);
+  const [inputState, setInputState] = React.useState('');
+  const [checkboxState, setCheckboxState] = React.useState(false);
+
+  // Основные стейты для saved-movies
+  const [savedBeatMovies, setSavedBeatMovies] = React.useState(null);
+  const [inputSavedState, setInputSavedState] = React.useState('');
+  const [checkboxSavedState, setCheckSavedboxState] = React.useState(false);
+
   // Стейт для работы прелоудера
-  const [isPreloaderActive, setIsPreloaderActive] = React.useState(true);
+  const [isPreloaderActive, setIsPreloaderActive] = React.useState(false);
   const [isGetError, setIsGetError] = React.useState(false);
   //Создадим стейт-переменную, отвечающую за успешную/неуспешную регистрацию текущего пользователя
   const [registeredIn, setRegisteredIn] = React.useState(false);
@@ -57,44 +57,92 @@ function App() {
 
   const history = useHistory();
 
-  React.useEffect(() => {
-    if(logIn) {
-      getInfoUser();
-    } else {
-      setCurrentUser([]);
-      sessionStorage.removeItem('inputMovie');
-      sessionStorage.removeItem('shortFilm');
-    }
-  },[logIn]);
-
-  React.useEffect(() => {
-    if(logIn) {
-      handleGetSavedMovies();
-    }
-  }, [,logIn]);
-
-  React.useEffect(() => {
-    if (logIn) {
-      moviesApi.getMoviesFromServer()
-        .then((moviesList) => {
-          setMovies(moviesList);
-          const initialMovies = handleSearchMovies(movie, moviesList);
-          handleCheckbox(checkbox, initialMovies);
-        })
-        .then(() => {
-          setIsGetError(false);
-        })
-        .catch((err) => {
-          setIsGetError(true);
-          console.log(err);
-        });
-    }
-  }, [,logIn]);
-
   // Работа прелоудера
   const handlePreloader = (value) => {
     setIsPreloaderActive(value);
   };
+
+  // movies
+  // Получаем фильмы в зависимости от инпута и состояния чекбокса
+  // useEffect - это вызов побочного эффекта при изменении переменных в его массиве зависимостей, при рендерах.
+  // Он ничего не мемоизирует (как useMemo), просто выполняет что-то по условию при рендере
+  React.useEffect (() => {
+      if(!beatMovies && (!!inputState || checkboxState)) {
+          if (localStorage.getItem('beatMovies')) {
+                setBeatMovies(JSON.parse(localStorage.getItem('beatMovies')));
+                handlePreloader(false);
+          } else {
+              // первый поиск
+              moviesApi.getMoviesFromServer()
+                  .then((moviesList) => {
+                      setBeatMovies(moviesList)
+                      localStorage.setItem('beatMovies', JSON.stringify(moviesList));
+                  })
+                  .then(() => {
+                      setIsGetError(false);
+                      handlePreloader(false);
+                  })
+                  .catch((err) => {
+                      setIsGetError(true);
+                      console.log(err);
+            });
+          }
+      }
+  }, [beatMovies, inputState, checkboxState]);
+
+  const handleGetSavedMovies = () => {
+    api.getSavedMovies()
+      .then((savedMoviesList) => {
+        setSavedBeatMovies(savedMoviesList);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // saved-movies
+  // Получение массива сохраненных фильмов
+  React.useEffect (() => {
+    if(!savedBeatMovies && logIn) {
+      handleGetSavedMovies();
+    }
+  }, [savedBeatMovies, inputSavedState, checkboxSavedState, logIn]);
+  
+  // movies
+  // Фильтруем фильмы по имени и чекбоксу
+  // Мемоизация (кеширование) проведённого расчёта (у нас - фильтрации)
+  // При каждом рендере React проверяет, изменились ли переменные в массиве зависимостей.
+  // Если да - выполняет переданный в эффект коллбек, а если нет- ничего не делает
+  // Если из хука вернуть функцию, она выполнится на размонтировании, однократно
+  const filteredMovies = React.useMemo(() => {
+    if(!beatMovies) {
+      return null;
+    } else {
+      return beatMovies.filter(function (film) {
+        if (checkboxState) {
+          return (film.duration <= 40 && film.nameRU.toLowerCase().includes(inputState.toLowerCase()));
+        } else {
+          return film.nameRU.toLowerCase().includes(inputState.toLowerCase());
+        }
+      });
+    }
+  }, [beatMovies, inputState, checkboxState]);
+
+
+// saved-movies
+  const filteredSavedMovies = React.useMemo(() => {
+    if(!savedBeatMovies) {
+      return null;
+    } else {
+      return savedBeatMovies.filter(function (film) {
+        if (checkboxSavedState) {
+          return (film.duration <= 40 && film.nameRU.toLowerCase().includes(inputSavedState.toLowerCase()));
+        } else {
+          return film.nameRU.toLowerCase().includes(inputSavedState.toLowerCase());
+        }
+      });
+    }
+  }, [savedBeatMovies, inputSavedState, checkboxSavedState]);
 
   const handleLoadRegister = (value) => {
     setIsFirstLoadRegister(value);
@@ -112,74 +160,38 @@ function App() {
     setIsFirstLoadLogin(value);
   };
 
-  const handleGetSavedMovies = () => {
-    api.getSavedMovies()
-      .then((movies) => {
-        setSavedMovies(movies);
-        const initialSavedMovies = handleSearchSavedMovies("", movies)
-        handleCheckboxSavedMovies(false, initialSavedMovies);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  // movies: инпут
+  // Защищаемся от изменения пропса с помощью React.useCallback
+  // Используем на функциях, которые пойдут в пропсы, чтобы в паре с НОС memo предотвращать многочисленные перерендеры
+  // HOC делает дочерние компоненты чистыми, то есть они перестают перерендериваться автоматом.
+  // Это будет происходить только при изменении пропсов
+  const handleInputState = React.useCallback((value) => {
+    setInputState(value);
+  }, []);
 
-  // Фильтрация фильмов по имени
-  const handleSearchMovies = (filmName, initialMovies) => {
-    if(filmName) {
-      const filteredMovies = initialMovies.filter(function (film) {
-        return film.nameRU.toLowerCase().includes(filmName.toLowerCase());
-      });
-      setMoviesFilteredByName(filteredMovies);
-      return filteredMovies;
-    } else {
-      setMoviesFilteredByName(initialMovies);
-      return initialMovies;
-    }
-  };
+  // movies: чекбокс
+  // Защищаемся от изменения пропса с помощью React.useCallback
+  // Хук useCallback предназначен для мемоизации (кэширования) уже не значения,
+  // а самой функции - если не меняются те внешние параметры, которые участвуют в расчёте (и указываются в массиве зависимостей),
+  // то функция не изменится, и перерендера не произойдёт
+  const handleCheckboxState = React.useCallback((value) => {
+    setCheckboxState(value);
+  }, []); // массив зависимостей внешних параметров (у нас их нет)
 
-  // Фильтрация сохраненных фильмов по имени 
-  const handleSearchSavedMovies = (filmName, initialSavedMovies) => {
-    const filteredMovies = initialSavedMovies.filter(function (film) {
-      return film.nameRU.toLowerCase().includes(filmName.toLowerCase());
-    });
-    setSavedMoviesFilteredByName(filteredMovies);
-    return filteredMovies;
-  };
+  // saved-movies: инпут
+  const handleInputSavedState = React.useCallback((value) => {
+    setInputSavedState(value);
+  }, []);
 
-  // Фильтрация фильмов по состоянию чекбокса
-  const handleCheckbox = (stateCheckbox, moviesWithName) => {
-    if (stateCheckbox) {
-      const filteredByNameAndCheckbox = moviesWithName.filter(function (film) {
-        return film.duration <= 40;
-      });
-      setMoviesFilteredByCheckbox(filteredByNameAndCheckbox);
-      handlePreloader(false);
-      return filteredByNameAndCheckbox;
-    }
-    setMoviesFilteredByCheckbox(moviesWithName);
-    handlePreloader(false);
-    return moviesWithName;
-  };
-
-  // Фильтрация сохраненных фильмов по состоянию чекбокса
-  const handleCheckboxSavedMovies = (stateCheckbox, savedMoviesWithName) => {
-    if (stateCheckbox) {
-      const filteredByNameAndCheckbox = savedMoviesWithName.filter(function (film) {
-        return film.duration <= 40;
-      });
-      setSavedMoviesByCheckbox(filteredByNameAndCheckbox);
-      return filteredByNameAndCheckbox;
-    }
-    setSavedMoviesByCheckbox(savedMoviesWithName);
-    return savedMoviesWithName;
-  };
+  // saved-movies: чекбокс
+  const handleCheckboxSavedState = React.useCallback((value) => {
+    setCheckSavedboxState(value);
+  }, []);
 
   // Добавляем фильм в сохраненные, если ему был поставлен лайк
   const saveMovie = (movie) => {
     api.saveNewMovie(movie)
       .then(() => {
-        // return setSavedMoviesByCheckbox([newMovie, ...savedMoviesByCheckbox]);
         handleGetSavedMovies();
       })
       .catch((err) => {
@@ -190,12 +202,10 @@ function App() {
   // Убираем фильм из сохраненных, если лайк был удален
   const deleteMovie = (movie) => {
     // Есть ли такой фильм в сохраненных фильмах
-    const necessaryMovie = savedMovies.find((savedMovie) => (savedMovie.movieId === movie.id || savedMovie.movieId === movie.movieId));
+    const necessaryMovie = savedBeatMovies.find((savedMovie) => (savedMovie.movieId === movie.id || savedMovie.movieId === movie.movieId));
     if (necessaryMovie) {
       api.deleteSavedMovie(necessaryMovie._id)
         .then(() => {
-          // const newSavedMovies = savedMovies.filter(savedMovie => savedMovie.movieId !== necessaryMovie.movieId);
-          // return setSavedMovies(newSavedMovies);
           handleGetSavedMovies();
         })
         .catch((err) => {
@@ -204,6 +214,7 @@ function App() {
     }
   };
 
+  // Отправка формы в компоненте Register
   const handleRegisterFormSubmit = (name, email, password) => {
     api.register(name, email, password)
     .then(() => {
@@ -218,18 +229,20 @@ function App() {
     });
   };
 
+  // Получим информацию о текущем пользователе
   const getInfoUser = () => {
     api.getInfoUser()
     .then((userInfoObject) => {
-      setLogIn(true);
+      setLogIn(true); //?
       setCurrentUser(userInfoObject);
     })
     .catch((err) => {
-      setLogIn(false);
+      setLogIn(false); //?
       console.log(err);
     });
   };
 
+  // Отправка формы в компоненте Login
   const handleLoginFormSubmit = (email, password) => {
     api.login(email, password)
     .then(() => {
@@ -245,6 +258,7 @@ function App() {
     });
   };
 
+  // Отправка формы в компоненте Profile
   const handleProfileFormSubmit = (name, email) => {
     api.changeInfoUser(name, email)
     .then((res) => {
@@ -259,19 +273,21 @@ function App() {
     });
   };
 
+  // Выход из профиля
   const handleProfileExit = () => {
     api.exitUserProfile()
     .then(() => {
       history.push('/');
-      sessionStorage.removeItem('inputMovie');
-      sessionStorage.removeItem('shortFilm');
+      setBeatMovies(null);
+      setSavedBeatMovies(null);
+      setInputState('');
+      setCheckboxState(false);
+      setInputSavedState('');
+      setCheckSavedboxState(false);
+      localStorage.removeItem('beatMovies');
+      localStorage.removeItem('inputState');
+      localStorage.removeItem('checkboxState');
       setCurrentUser([]);
-      // setMovies([]);
-      // setMoviesFilteredByName([]);
-      // setMoviesFilteredByCheckbox([]);
-      // setSavedMovies([]);
-      // setSavedMoviesFilteredByName([]);
-      // setSavedMoviesByCheckbox([]);
       setLogIn(false);
     })
     .catch((err) => {
@@ -295,32 +311,30 @@ function App() {
           <ProtectedRoute
               path="/movies"
               component={Movies}
-              movies={movies}
-              moviesFilteredByName={moviesFilteredByName}
-              moviesFilteredByCheckbox={moviesFilteredByCheckbox}
-              handleSearchMovies={handleSearchMovies}
-              handleCheckbox={handleCheckbox}
-              movie={movie}
-              checkbox={checkbox}
               isPreloaderActive={isPreloaderActive}
               isGetError={isGetError}
               saveMovie={saveMovie}
               deleteMovie={deleteMovie}
-              savedMovies={savedMovies}
               logIn={logIn}
+              filteredMovies={filteredMovies}
+              handleInputState={handleInputState}
+              handleCheckboxState={handleCheckboxState}
+              handlePreloader={handlePreloader}
+              savedBeatMovies={savedBeatMovies}
           />
           <ProtectedRoute
               path="/saved-movies"
               component={SavedMovies}
               isPreloaderActive={isPreloaderActive}
-              handleSearchSavedMovies={handleSearchSavedMovies}
-              savedMoviesFilteredByName={savedMoviesFilteredByName}
-              savedMoviesByCheckbox={savedMoviesByCheckbox}
-              handleCheckboxSavedMovies={handleCheckboxSavedMovies}
               saveMovie={saveMovie}
               deleteMovie={deleteMovie}
-              savedMovies={savedMovies}
               logIn={logIn}
+              savedBeatMovies={savedBeatMovies}
+              filteredSavedMovies={filteredSavedMovies}
+              handleInputSavedState={handleInputSavedState}
+              handleCheckboxSavedState={handleCheckboxSavedState}
+              inputSavedState={inputSavedState}
+              checkboxSavedState={checkboxSavedState}
           />
           <Route path="/signup">
             <Register
