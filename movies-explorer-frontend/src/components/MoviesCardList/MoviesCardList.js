@@ -19,11 +19,30 @@ function MoviesCardList({
 
   const [shownMovies, setShownMovies] = React.useState([]);
   const [shownSavedMovies, setShownSavedMovies] = React.useState([]);
+  // Ширина экрана
+  const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
 
-  const checkWindowWidth = (moviesArray, windowWidth) => {
-    if(windowWidth > 768) {
+  const handleWindowChange = () => {
+    setScreenWidth(window.innerWidth);
+    const delay = 200;
+    if(filteredMovies != null) {
+      setTimeout(checkWindowWidth(filteredMovies), delay);
+    }
+  };
+
+  // Изменение ширины экрана устройства
+  React.useEffect(() => {
+    window.addEventListener('resize', handleWindowChange);
+    // Если из хука вернуть функцию, она выполнится на размонтировании, однократно
+    return () => {
+      window.removeEventListener("resize", handleWindowChange);
+    };
+  }, [screenWidth]);
+
+  const checkWindowWidth = (moviesArray) => {
+    if(screenWidth > 768) {
       setShownMovies(moviesArray.slice(0, 12));
-    } else if (windowWidth <= 768 && windowWidth > 480) {
+    } else if (screenWidth <= 768 && screenWidth > 480) {
       setShownMovies(moviesArray.slice(0, 8));
     } else {
       setShownMovies(moviesArray.slice(0, 5));
@@ -33,9 +52,9 @@ function MoviesCardList({
   // movies
   React.useEffect(() => {
     if(!isSavedMovies && filteredMovies != null) {
-      checkWindowWidth(filteredMovies, window.innerWidth);
+      checkWindowWidth(filteredMovies);
     }
-  }, [filteredMovies, isSavedMovies]);
+  }, [filteredMovies, isSavedMovies, screenWidth]);
 
   // saved-movies
   React.useEffect(() => {
@@ -44,23 +63,21 @@ function MoviesCardList({
     }
   }, [filteredSavedMovies, isSavedMovies, inputSavedState, checkboxSavedState, savedBeatMovies]);
 
-  // Слушаем изменение ширины экрана устройства
-  window.addEventListener('resize', function() {
-    // Задержка вызова функции в мс
-    const delay = 200;
-    if(filteredMovies != null) {
-      setTimeout(checkWindowWidth(filteredMovies, window.innerWidth), delay);
-    }
-  });
-
   const onAddButtonClick = () => {
     const arrayLength = shownMovies.length;
-    const windowWidth = window.innerWidth;
-    if(windowWidth > 768) {
+    if(screenWidth > 1279) {
       setShownMovies(filteredMovies.slice(0, arrayLength + 4));
+    } else if(screenWidth <= 1279 && screenWidth >= 990) {
+      setShownMovies(filteredMovies.slice(0, arrayLength + 3));
     } else {
       setShownMovies(filteredMovies.slice(0, arrayLength + 2));
     }
+  };
+
+  const checkCardLike = (movie) => {
+    return savedBeatMovies.find((item) => {
+      return item.movieId === movie.id;
+    })
   };
       
   return (
@@ -77,7 +94,7 @@ function MoviesCardList({
                         movie={movie}
                         saveMovie={saveMovie}
                         deleteMovie={deleteMovie}
-                        savedBeatMovies={savedBeatMovies}
+                        isLiked={checkCardLike(movie)}
                     />
                 </li>
               )
@@ -100,7 +117,7 @@ function MoviesCardList({
                             movie={movie}
                             saveMovie={saveMovie}
                             deleteMovie={deleteMovie}
-                            savedBeatMovies={savedBeatMovies}
+                            isLiked={checkCardLike(movie)}
                         />
                     </li>
                   )

@@ -6,35 +6,21 @@ function MoviesCard({
   movie,
   saveMovie,
   deleteMovie,
-  savedBeatMovies
+  isLiked
 }) {
-
-  const [isCardLiked, setIsCardLiked] = React.useState(false);
 
   const movieHours = Math.floor(movie.duration / 60);
   const movieMinutes = (movie.duration % 60);
 
-  // Отрисовка лайка на карточке фильма
-  React.useEffect (() => {
-    savedBeatMovies.find((item) => {
-      if(item.movieId === movie.id) {
-        setIsCardLiked(true);
-      }
-    })
-  }, [savedBeatMovies])
-
   //Обработчик клика по лайку
   const handleLikeClick = () => {
-    if (isSavedMovies) {
+    if(isSavedMovies) {
         deleteMovie(movie);
-        setIsCardLiked(false);
     } else {
-      if (isCardLiked) {
+      if(isLiked) {
         deleteMovie(movie);
-        setIsCardLiked(false);
       } else {
         saveMovie(movie);
-        setIsCardLiked(true);
       }
     }
   };
@@ -51,7 +37,7 @@ function MoviesCard({
         <div className="moviesCard__wrapper">
             <h3 className="moviesCard__sign">{movie.nameRU}</h3>
             <button
-              className={`moviesCard__button ${isCardLiked ? "moviesCard__button_active" : ""} ${isSavedMovies ? "moviesCard__button_type_savedMovies" : ""}`}
+              className={`moviesCard__button ${isLiked ? "moviesCard__button_active" : ""} ${isSavedMovies ? "moviesCard__button_type_savedMovies" : ""}`}
               type="button"
               onClick={handleLikeClick}
             >

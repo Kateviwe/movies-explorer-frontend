@@ -18,6 +18,7 @@ function Profile({
     const currentUserInfoContext = React.useContext(CurrentUserContext);
     const { values, textErrors, isValid, handleChange } = useFormWithValidation();
     const [isEditButtonPressed, setIsEditButtonPressed] = React.useState(false);
+    const regExpEmail = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$';
 
     // Активная/неактивная кнопка "Сохранить"
     const buttonSaveState = (!isValid || (currentUserInfoContext.name === values.name && currentUserInfoContext.email === values.email));
@@ -51,11 +52,10 @@ function Profile({
                             <p className="formProfile__header">Имя</p>
                             <input
                                 className={`formProfile__input ${!isEditButtonPressed && 'formProfile__input_disabled'}`}
-                                placeholder={currentUserInfoContext.name}
                                 type="text"
                                 required
                                 name="name"
-                                value={values.name || ""}
+                                value={values.name || currentUserInfoContext.name}
                                 onChange={handleChange}
                                 disabled={!isEditButtonPressed}
                             />
@@ -67,13 +67,13 @@ function Profile({
                             <p className="formProfile__header">E-mail</p>
                             <input
                                 className={`formProfile__input ${!isEditButtonPressed && 'formProfile__input_disabled'}`}
-                                placeholder={currentUserInfoContext.email}
                                 type="email"
                                 required
                                 name="email"
-                                value={values.email || ""}
+                                value={values.email || currentUserInfoContext.email}
                                 onChange={handleChange}
                                 disabled={!isEditButtonPressed}
+                                pattern={regExpEmail}
                             />
                         </div>
                         <span className={`formProfile__span ${!isValid.email && 'formProfile__span_visible'}`}>{textErrors.email}</span>
