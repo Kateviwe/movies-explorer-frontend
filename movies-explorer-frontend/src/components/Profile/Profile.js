@@ -16,13 +16,17 @@ function Profile({
 }) {
 
     const currentUserInfoContext = React.useContext(CurrentUserContext);
-    const { values, textErrors, isValid, handleChange } = useFormWithValidation();
+    const { values, textErrors, isValid, handleChange, resetForm } = useFormWithValidation();
     const [isEditButtonPressed, setIsEditButtonPressed] = React.useState(false);
     const regExpEmail = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$';
 
     // Активная/неактивная кнопка "Сохранить"
     const buttonSaveState = (!isValid || (currentUserInfoContext.name === values.name && currentUserInfoContext.email === values.email));
 
+    React.useEffect(() => {
+        resetForm(currentUserInfoContext);
+    }, [resetForm, currentUserInfoContext])
+    
     React.useEffect(() => {
         getInfoUser();
         handleErrUp(false);
