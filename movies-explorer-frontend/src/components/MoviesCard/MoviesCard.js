@@ -6,41 +6,28 @@ function MoviesCard({
   movie,
   saveMovie,
   deleteMovie,
-  savedMovies
+  isLiked
 }) {
-
-  const [isCardLiked, setIsCardLiked] = React.useState(false);
 
   const movieHours = Math.floor(movie.duration / 60);
   const movieMinutes = (movie.duration % 60);
 
-  React.useEffect (() => {
-    savedMovies.find((item) => {
-      if(item.movieId === movie.id) {
-        setIsCardLiked(true);
-      }
-    })
-  }, [])
-
   //Обработчик клика по лайку
   const handleLikeClick = () => {
-    if (isSavedMovies) {
+    if(isSavedMovies) {
         deleteMovie(movie);
-        setIsCardLiked(false);
     } else {
-      if (isCardLiked) {
+      if(isLiked) {
         deleteMovie(movie);
-        setIsCardLiked(false);
       } else {
         saveMovie(movie);
-        setIsCardLiked(true);
       }
     }
   };
 
   return (
     <div className="moviesCard">
-        <a href={movie.trailerLink} target="_blank" rel="noreferrer">
+        <a href={!isSavedMovies ? movie.trailerLink : movie.trailer} target="_blank" rel="noreferrer">
           <img
             className="moviesCard__image" 
             src={isSavedMovies ? movie.image : `https://api.nomoreparties.co${movie.image.url}`} 
@@ -50,7 +37,7 @@ function MoviesCard({
         <div className="moviesCard__wrapper">
             <h3 className="moviesCard__sign">{movie.nameRU}</h3>
             <button
-              className={`moviesCard__button ${isCardLiked ? "moviesCard__button_active" : ""} ${isSavedMovies ? "moviesCard__button_type_savedMovies" : ""}`}
+              className={`moviesCard__button ${isLiked ? "moviesCard__button_active" : ""} ${isSavedMovies ? "moviesCard__button_type_savedMovies" : ""}`}
               type="button"
               onClick={handleLikeClick}
             >

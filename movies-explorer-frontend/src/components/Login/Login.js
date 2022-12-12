@@ -12,7 +12,8 @@ function Login({
 }) {
 
     const { values, textErrors, isValid, handleChange, resetForm } = useFormWithValidation();
-
+    const regExpEmail = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$';
+    
     React.useEffect(() => {
         resetForm();
         handleLoadLogin(true);
@@ -39,6 +40,7 @@ function Login({
                         name="email"
                         value={values.email || ""}
                         onChange={handleChange}
+                        pattern={regExpEmail}
                     />
                     <span className={`formLogin__span ${!isValid.email && 'formLogin__span_visible'}`}>{textErrors.email}</span>
                     <legend className="formLogin__legend">Пароль</legend>

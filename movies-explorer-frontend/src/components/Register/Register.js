@@ -13,6 +13,7 @@ function Register({
 }) {
 
     const { values, textErrors, isValid, handleChange, resetForm } = useFormWithValidation();
+    const regExpEmail = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$';
 
     React.useEffect(() => {
         resetForm();
@@ -50,6 +51,7 @@ function Register({
                         name="email"
                         value={values.email || ""}
                         onChange={handleChange}
+                        pattern={regExpEmail}
                     />
                     <span className={`form__span ${!isValid.email && 'form__span_visible'}`}>{textErrors.email}</span>
                     <legend className="form__legend">Пароль</legend>

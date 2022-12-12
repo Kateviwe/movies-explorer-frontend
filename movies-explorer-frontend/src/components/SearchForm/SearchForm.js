@@ -4,72 +4,95 @@ import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
 
 function SearchForm({
   isSavedMovies,
-  movies,
-  moviesFilteredByName,
-  handleSearchMovies,
-  handleCheckbox,
-  movie,
-  checkbox,
   handleLoad,
-  handleSearchSavedMovies,
-  handleCheckboxSavedMovies,
-  savedMoviesFilteredByName,
-  savedMovies,
+  handleInputState,
+  handleCheckboxState,
+  initialInput,
+  initialCheckbox,
+  handlePreloader,
+  handleCheckboxSearchSubmit,
+  handleInputSavedState,
+  handleCheckboxSavedState
 }) {
 
-  const [inputValue, setInputValue] = React.useState('');
+  // movies
+  const [input, setInput] = React.useState(initialInput ?? '');
+  const [isShort, setIsShort] = React.useState(initialCheckbox ?? false);
   const [isInputValid, setIsInputValid] = React.useState(true);
-  const [isShortFilm, setIsShortFilm] = React.useState(checkbox);
-  const [isSavedShortFilm, setIsSavedShortFilm] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!isSavedMovies) {
-      setInputValue(sessionStorage.getItem('inputMovie'));
-      setIsShortFilm(JSON.parse(sessionStorage.getItem('shortFilm')));
+  // saved-movies
+  const [savedInput, setSavedInput] = React.useState('');
+  const [isSavedShort, setSavedIsShort] = React.useState(false);
+
+  // movies: перерендер фильмов сразу при нажатии на чекбокс
+  React.useEffect (() => {
+    if(!isSavedMovies && localStorage.getItem('inputState')) {
+      handleCheckboxSearchSubmit(isShort);
     }
-  }, [])
+  }, [isShort]);
 
-  const handleShortFilm = (value) => {
-    setIsShortFilm(value);
+  // saved-movies: перерендер фильмов сразу при нажатии на чекбокс
+  React.useEffect (() => {
+    if(isSavedMovies) {
+      handleCheckboxSavedState(isSavedShort);
+    }
+  }, [isSavedShort]);
+
+  // movies: инпут
+  const handleChangeInputValue = (evt) => {
+    setInput(evt.target.value);
   };
-  
+
+  // movies: чекбокс
+  const handleIsShort = (value) => {
+    setIsShort(value);
+  };
+
+  // saved-movies: инпут
+  const handleChangeSavedInputValue = (evt) => {
+    setSavedInput(evt.target.value);
+  };
+
+  // saved-movies: чекбокс
+  const handleIsSavedShort = (value) => {
+    setSavedIsShort(value);
+  };
+
+  // Обработчик отправки формы
   const handleFormSubmit = (evt) => {
     evt.preventDefault();
-    if (inputValue || isSavedMovies) {
-      setIsInputValid(true);
-      if (!isSavedMovies) {
-        const moviesWithName = handleSearchMovies(inputValue, movies);
-        handleCheckbox(isShortFilm, moviesWithName);
+    if(!isSavedMovies) {
+      // Если в инпут что-то ввели
+      if (input) {
+        if(!localStorage.getItem('beatMovies')) {
+          handlePreloader(true);
+        }
+        setIsInputValid(true);
         handleLoad(false);
-        sessionStorage.setItem('inputMovie', inputValue);
+        // Инпут формы
+        localStorage.setItem('inputState', input);
+        const savedInput = localStorage.getItem('inputState');
+        handleInputState(savedInput);
       } else {
-        const savedMoviesWithName = handleSearchSavedMovies(inputValue || "", savedMovies);
-        handleCheckboxSavedMovies(isSavedShortFilm, savedMoviesWithName);
+        setIsInputValid(false);
       }
+      // Состояние чекбокса
+      const savedCheckbox = JSON.parse(localStorage.getItem('checkboxState'));
+      handleCheckboxState(savedCheckbox);
     } else {
-      setIsInputValid(false);
-    }
-  };
-  
-  const handleCheckboxChange = (checkboxState) => {
-    if (!isSavedMovies) {
-      handleLoad(false);
-      handleShortFilm(checkboxState);
-      sessionStorage.setItem('shortFilm', checkboxState);
-      handleCheckbox(checkboxState, moviesFilteredByName);
-    } else {
-      setIsSavedShortFilm(checkboxState);
-      handleCheckboxSavedMovies(checkboxState, savedMoviesFilteredByName);
+      handleInputSavedState(savedInput);
+      handleCheckboxSavedState(isSavedShort);
     }
   };
 
-  const handleChangeInputValue = (evt) => {
-    setInputValue(evt.target.value);
-  };
-  
   return (
     <div className="searchForm">
-        <form className="searchForm__form" name="searchForm" onSubmit={handleFormSubmit} noValidate>
+        <form
+          className="searchForm__form"
+          name="searchForm"
+          onSubmit={handleFormSubmit}
+          noValidate
+        >
             <fieldset className="searchForm__fieldset">
                 <input
                     id="searchFilm-input"
@@ -78,21 +101,22 @@ function SearchForm({
                     name="searchFilm"
                     placeholder="Фильм"
                     required
-                    value={inputValue || "" }
-                    onChange={handleChangeInputValue}
+                    value={!isSavedMovies ? input : savedInput}
+                    onChange={!isSavedMovies ? handleChangeInputValue : handleChangeSavedInputValue}
                 />
             </fieldset>
             <button className="searchForm__find-button" type="submit">Найти</button>
-            <span className={`searchForm__span ${((isInputValid || inputValue)) ? "" : "searchForm__span_active" }`}>Нужно ввести ключевое слово</span>
+            <span className={`searchForm__span ${(!isSavedMovies ? (isInputValid || input) : true) ? "" : "searchForm__span_active" }`}>Нужно ввести ключевое слово</span>
         </form>
         <FilterCheckbox
-          isShortFilm={isShortFilm}
-          handleCheckboxChange={handleCheckboxChange}
           isSavedMovies={isSavedMovies}
-          handleShortFilm={handleShortFilm}
+          isShort={isShort}
+          handleIsShort={handleIsShort}
+          handleIsSavedShort={handleIsSavedShort}
+          isSavedShort={isSavedShort}
         />
     </div>
   );
 }
 
-export default SearchForm;
+export default React.memo(SearchForm);
